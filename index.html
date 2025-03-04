@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darts Score Tracker</title>
+    <title>Omladinski pikADO</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -70,13 +70,13 @@
     <div class="container">
         <a href="https://imgbb.com/"><img src="https://i.ibb.co/JRwfZmq8/logo.png" alt="logo" border="0" width="100" height="100"></a><br /><br />
         <p class="current-turn" id="currentTurnDisplay">Current Turn: -</p>
-        <h2>Darts Score Tracker</h2>
-        <label for="gameTarget">Game Target Score:</label>
+        <h2>Omladinski pikADO</h2>
+        <label for="gameTarget">Dokle:</label>
         <input type="number" id="gameTarget" value="301">
-        <input type="number" id="scoreInput" placeholder="Enter points for this round">
-        <button onclick="submitScore()">Submit Score</button>
+        <input type="number" id="scoreInput" placeholder="Unesi poene od ove runde">
+        <button onclick="submitScore()">BAM</button>
         <div id="players"></div>
-        <button onclick="addPlayer()">Add Player</button>
+        <button onclick="addPlayer()">Dodaj Igrača</button>
     </div>
 
     <script>
@@ -94,9 +94,9 @@
             let playerDiv = document.createElement("div");
             playerDiv.className = "player";
             playerDiv.innerHTML = `
-                <input type="text" placeholder="Player Name" id="name${playerCount}">
-                <p>Remaining: <span id="remaining${playerCount}">-</span></p>
-                <p>Average: <span id="average${playerCount}">0</span></p>
+                <input type="text" placeholder="Ime" id="name${playerCount}">
+                <p>Ostalo: <span id="remaining${playerCount}">-</span></p>
+                <p>Prosjek: <span id="average${playerCount}">0</span></p>
             `;
             document.getElementById("players").appendChild(playerDiv);
             updateTurnDisplay();
@@ -122,8 +122,8 @@
         }
 
         function updateTurnDisplay() {
-            let currentPlayerName = document.getElementById(`name${currentPlayer}`)?.value || `Player ${currentPlayer}`;
-            document.getElementById("currentTurnDisplay").textContent = `Current Turn: ${currentPlayerName}`;
+            let currentPlayerName = document.getElementById(`name${currentPlayer}`)?.value || `Igrac ${currentPlayer}`;
+            document.getElementById("currentTurnDisplay").textContent = `Na redu: ${currentPlayerName}`;
         }
 
         function nextTurn() {
