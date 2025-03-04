@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darts Score Tracker</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+        .player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: #2c2c2c;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 12px;
+            margin: 8px 0;
+            width: 100%;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background: #3a3a3a;
+            color: #fff;
+        }
+        button {
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            border-radius: 5px;
+            margin-top: 8px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .current-turn {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #ffcc00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p class="current-turn" id="currentTurnDisplay">Current Turn: -</p>
+        <h2>Darts Score Tracker</h2>
+        <label for="gameTarget">Game Target Score:</label>
+        <input type="number" id="gameTarget" value="301">
+        <input type="number" id="scoreInput" placeholder="Enter points for this round">
+        <button onclick="submitScore()">Submit Score</button>
+        <div id="players"></div>
+        <button onclick="addPlayer()">Add Player</button>
+    </div>
+
+    <script>
+        let playerCount = 0;
+        let scores = {};
+        let currentPlayer = 1;
+
+        function addPlayer() {
+            if (playerCount >= 8) {
+                alert("Maximum 8 players allowed");
+                return;
+            }
+            playerCount++;
+            scores[playerCount] = [];
+            let playerDiv = document.createElement("div");
+            playerDiv.className = "player";
+            playerDiv.innerHTML = `
+                <input type="text" placeholder="Player Name" id="name${playerCount}">
+                <p>Remaining: <span id="remaining${playerCount}">-</span></p>
+                <p>Average: <span id="average${playerCount}">0</span></p>
+            `;
+            document.getElementById("players").appendChild(playerDiv);
+            updateTurnDisplay();
+        }
+
+        function submitScore() {
+            let scoreInput = document.getElementById("scoreInput");
+            let pointsToAdd = parseInt(scoreInput.value, 10);
+            if (!isNaN(pointsToAdd) && pointsToAdd > 0) {
+                scores[currentPlayer].push(pointsToAdd);
+                let totalScore = scores[currentPlayer].reduce((a, b) => a + b, 0);
+                let gameTarget = parseInt(document.getElementById("gameTarget").value, 10) || 301;
+                let remainingDisplay = document.getElementById(`remaining${currentPlayer}`);
+                let averageDisplay = document.getElementById(`average${currentPlayer}`);
+                let averageScore = (totalScore / scores[currentPlayer].length).toFixed(2);
+                remainingDisplay.textContent = gameTarget - totalScore;
+                averageDisplay.textContent = averageScore;
+                scoreInput.value = "";
+                nextTurn();
+            } else {
+                alert("Please enter a valid score.");
+            }
+        }
+
+        function updateTurnDisplay() {
+            let currentPlayerName = document.getElementById(`name${currentPlayer}`)?.value || `Player ${currentPlayer}`;
+            document.getElementById("currentTurnDisplay").textContent = `Current Turn: ${currentPlayerName}`;
+        }
+
+        function nextTurn() {
+            currentPlayer = currentPlayer % playerCount + 1;
+            updateTurnDisplay();
+        }
+
+        // Initialize players
+        addPlayer();
+        addPlayer();
+    </script>
+</body>
+</html>
