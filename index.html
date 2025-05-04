@@ -1,139 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omladinski pikADO</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            background-color: #121212;
-            color: #fff;
-            padding: 20px;
-        }
-        .container {
-            max-width: 400px;
-            margin: auto;
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-        }
-        .player {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 8px;
-            background: #2c2c2c;
-        }
-        input[type="text"], input[type="number"] {
-            padding: 12px;
-            margin: 8px 0;
-            width: 100%;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background: #3a3a3a;
-            color: #fff;
-        }
-        button {
-            padding: 12px;
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            border-radius: 5px;
-            margin-top: 8px;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        .current-turn {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 15px;
-            color: #ffcc00;
-        }
-        .logo {
-            width: 100px;
-            height: 100px;
-            margin: 10px auto;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pomodoro Timer</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      background-color: #121212;
+      color: #fff;
+      padding: 20px;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+    button {
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      width: 48%;
+      border-radius: 5px;
+      margin: 8px 1%;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .timer-display {
+      font-size: 48px;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #ffcc00;
+    }
+    .status {
+      font-size: 24px;
+      margin-top: 10px;
+      color: #00ffaa;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <a href="https://imgbb.com/"><img src="https://i.ibb.co/JRwfZmq8/logo.png" alt="logo" border="0" width="50" height="50"></a><br /><br />
-        <p class="current-turn" id="currentTurnDisplay">Current Turn: -</p>
-        <h2>Omladinski pikADO</h2>
-        <label for="gameTarget">Dokle:</label>
-        <input type="number" id="gameTarget" value="301">
-        <input type="number" id="scoreInput" placeholder="Unesi poene od ove runde">
-        <button onclick="submitScore()">BAM</button>
-        <div id="players"></div>
-        <button onclick="addPlayer()">Dodaj Igrača</button>
-    </div>
+  <div class="container">
+    <h2>Pomodoro Timer</h2>
+    <div class="timer-display" id="timerDisplay">25:00</div>
+    <p class="status" id="statusText">Ready to start</p>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="pauseTimer()">Pause</button>
+  </div>
 
-    <script>
-        let playerCount = 0;
-        let scores = {};
-        let currentPlayer = 1;
+  <!-- Notification Sounds -->
+  <audio id="sound1" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+  <audio id="sound2" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+  <audio id="sound3" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
 
-        function addPlayer() {
-            if (playerCount >= 8) {
-                alert("Maximum 8 players allowed");
-                return;
-            }
-            playerCount++;
-            scores[playerCount] = [];
-            let playerDiv = document.createElement("div");
-            playerDiv.className = "player";
-            playerDiv.innerHTML = `
-                <input type="text" placeholder="Ime" id="name${playerCount}">
-                <p>Ostalo: <span id="remaining${playerCount}">-</span></p>
-                <p>Prosjek: <span id="average${playerCount}">0</span></p>
-            `;
-            document.getElementById("players").appendChild(playerDiv);
-            updateTurnDisplay();
+  <script>
+    let isWorkSession = true;
+    let workDuration = 25 * 60; // 25 minutes
+    let breakDuration = 5 * 60; // 5 minutes
+    let remaining = workDuration;
+    let timer;
+    let isPaused = false;
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function updateDisplay() {
+      document.getElementById("timerDisplay").textContent = formatTime(remaining);
+      document.getElementById("statusText").textContent = isWorkSession ? "Work Time 💼" : "Break Time ☕";
+    }
+
+    function playRandomSound() {
+      const sounds = [sound1, sound2, sound3];
+      const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+      randomSound.play();
+    }
+
+    function startTimer() {
+      if (isPaused) {
+        isPaused = false;
+        return;
+      }
+
+      clearInterval(timer);
+      updateDisplay();
+
+      timer = setInterval(() => {
+        if (!isPaused) {
+          remaining--;
+          updateDisplay();
+
+          if (remaining <= 0) {
+            clearInterval(timer);
+            playRandomSound();
+            isWorkSession = !isWorkSession;
+            remaining = isWorkSession ? workDuration : breakDuration;
+            updateDisplay();
+            startTimer();
+          }
         }
+      }, 1000);
+    }
 
-        function submitScore() {
-            let scoreInput = document.getElementById("scoreInput");
-            let pointsToAdd = parseInt(scoreInput.value, 10);
-            if (!isNaN(pointsToAdd) && pointsToAdd > 0) {
-                scores[currentPlayer].push(pointsToAdd);
-                let totalScore = scores[currentPlayer].reduce((a, b) => a + b, 0);
-                let gameTarget = parseInt(document.getElementById("gameTarget").value, 10) || 301;
-                let remainingDisplay = document.getElementById(`remaining${currentPlayer}`);
-                let averageDisplay = document.getElementById(`average${currentPlayer}`);
-                let averageScore = (totalScore / scores[currentPlayer].length).toFixed(2);
-                remainingDisplay.textContent = gameTarget - totalScore;
-                averageDisplay.textContent = averageScore;
-                scoreInput.value = "";
-                nextTurn();
-            } else {
-                alert("Please enter a valid score.");
-            }
-        }
+    function pauseTimer() {
+      isPaused = true;
+    }
 
-        function updateTurnDisplay() {
-            let currentPlayerName = document.getElementById(`name${currentPlayer}`)?.value || `Igrac ${currentPlayer}`;
-            document.getElementById("currentTurnDisplay").textContent = `Na redu: ${currentPlayerName}`;
-        }
-
-        function nextTurn() {
-            currentPlayer = currentPlayer % playerCount + 1;
-            updateTurnDisplay();
-        }
-
-        // Initialize players
-        addPlayer();
-        addPlayer();
-    </script>
+    // For manual reset or restart, you can add another button and function if desired.
+  </script>
 </body>
 </html>
