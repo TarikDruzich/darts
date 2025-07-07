@@ -1,259 +1,407 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bs">
 <head>
-    <meta charset="UTF-8" />
-    <title>Enhanced Pomodoro Timer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Pizzeria Bihać - Menu</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+            min-height: 100vh;
             padding: 20px;
-            background: #f8f9fa;
         }
+
         .container {
-            max-width: 400px;
-            margin: auto;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
             text-align: center;
-            border: 2px solid #ccc;
-            padding: 20px;
-            border-radius: 10px;
-            background: #fff;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
         }
-        #sessionType {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 5px;
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
         }
-        body.work #sessionType {
-            background: #ffcccc;
-            color: #a30000;
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        body.break #sessionType {
-            background: #ccffcc;
-            color: #006600;
-        }
-        #timer {
+
+        .header h1 {
             font-size: 3rem;
-            margin: 10px 0;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
         }
-        .controls button {
-            margin: 5px;
-            padding: 10px 15px;
-            font-size: 1rem;
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
         }
-        .stats, .history {
-            text-align: left;
-            margin-top: 20px;
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 40px;
         }
-        .history table {
-            width: 100%;
-            border-collapse: collapse;
+
+        .menu-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .history th, .history td {
-            border: 1px solid #ccc;
-            padding: 5px;
-            text-align: left;
+
+        .menu-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         }
-        .history th {
-            background: #f0f0f0;
+
+        .menu-section h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #dee2e6;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-radius: 8px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .item-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .item-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-left: 15px;
+        }
+
+        .contact-info {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .contact-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .contact-info p {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .menu-section {
+                padding: 20px;
+            }
         }
     </style>
 </head>
-<body class="work">
+<body>
     <div class="container">
-        <h1>Pomodoro Timer</h1>
-        <div id="sessionType">Work Session</div>
-        <div id="timer">25:00</div>
-        <div class="controls">
-            <button id="startBtn">Start</button>
-            <button id="resetBtn">Reset</button>
-            <button id="toggleBtn">Hide Timer</button>
+        <div class="header">
+            <h1>🍕 City Pizzeria</h1>
+            <p>Najbolja pizza u Bihaću</p>
         </div>
-        <div class="stats">
-            <p>Today's Pomodoros: <span id="todayCount">0</span></p>
-            <p>Streak: <span id="streakCount">0</span> days</p>
+
+        <div class="menu-grid">
+            <div class="menu-section">
+                <h2>🍕 Pizze</h2>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Margherita</div>
+                        <div class="item-description">Paradajz sos, mozzarella, bosiljak</div>
+                    </div>
+                    <div class="item-price">12,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Quattro Stagioni</div>
+                        <div class="item-description">Šunka, pečurke, artičoke, masline</div>
+                    </div>
+                    <div class="item-price">16,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Capricciosa</div>
+                        <div class="item-description">Šunka, pečurke, artičoke, jaje</div>
+                    </div>
+                    <div class="item-price">15,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Bosanska</div>
+                        <div class="item-description">Ćevapi, luk, kajmak, ajvar</div>
+                    </div>
+                    <div class="item-price">18,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Vegetariana</div>
+                        <div class="item-description">Paprika, pečurke, paradajz, luk</div>
+                    </div>
+                    <div class="item-price">14,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Quattro Formaggi</div>
+                        <div class="item-description">Mozzarella, gorgonzola, parmezan, ricotta</div>
+                    </div>
+                    <div class="item-price">17,00 KM</div>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <h2>🍖 Meso i Roštilj</h2>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Ćevapi (10 kom)</div>
+                        <div class="item-description">Sa lukom, lepinjom i kajmakom</div>
+                    </div>
+                    <div class="item-price">12,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Pleskavica</div>
+                        <div class="item-description">200g, sa lepinjom i prilozima</div>
+                    </div>
+                    <div class="item-price">10,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Miješano meso</div>
+                        <div class="item-description">Ćevapi, pleskavica, kobasica</div>
+                    </div>
+                    <div class="item-price">20,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Piletina sa roštilj</div>
+                        <div class="item-description">Pileći file, pomfrit, salata</div>
+                    </div>
+                    <div class="item-price">16,00 KM</div>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <h2>🍝 Pasta</h2>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Spaghetti Carbonara</div>
+                        <div class="item-description">Panceta, jaja, parmezan, crni biber</div>
+                    </div>
+                    <div class="item-price">15,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Penne Arrabbiata</div>
+                        <div class="item-description">Ljuti paradajz sos, čili, bosiljak</div>
+                    </div>
+                    <div class="item-price">13,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Lasagna</div>
+                        <div class="item-description">Bolognese sos, bešamel, mozzarella</div>
+                    </div>
+                    <div class="item-price">18,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Fettuccine Alfredo</div>
+                        <div class="item-description">Krem sos, parmezan, piletina</div>
+                    </div>
+                    <div class="item-price">16,00 KM</div>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <h2>🥗 Salate</h2>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Cezar salata</div>
+                        <div class="item-description">Zelena salata, kruton, parmezan, dressing</div>
+                    </div>
+                    <div class="item-price">11,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Grčka salata</div>
+                        <div class="item-description">Paradajz, krastavac, feta, masline</div>
+                    </div>
+                    <div class="item-price">10,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Tunjevina salata</div>
+                        <div class="item-description">Tunjevina, jaja, kukuruz, mayo</div>
+                    </div>
+                    <div class="item-price">12,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Sezonska salata</div>
+                        <div class="item-description">Miješano sezonsko povrće</div>
+                    </div>
+                    <div class="item-price">8,00 KM</div>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <h2>🍹 Napitci</h2>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Coca Cola (0.33l)</div>
+                        <div class="item-description">Limenka</div>
+                    </div>
+                    <div class="item-price">3,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Fanta (0.33l)</div>
+                        <div class="item-description">Limenka</div>
+                    </div>
+                    <div class="item-price">3,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Prirodna voda (0.5l)</div>
+                        <div class="item-description">Flaša</div>
+                    </div>
+                    <div class="item-price">2,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Pivo (0.5l)</div>
+                        <div class="item-description">Domaće pivo</div>
+                    </div>
+                    <div class="item-price">4,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Espresso</div>
+                        <div class="item-description">Talijanska kava</div>
+                    </div>
+                    <div class="item-price">2,50 KM</div>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <h2>🍰 Deserti</h2>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Tiramisu</div>
+                        <div class="item-description">Klasični talijanski desert</div>
+                    </div>
+                    <div class="item-price">8,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Panna Cotta</div>
+                        <div class="item-description">Sa voćnim sirupom</div>
+                    </div>
+                    <div class="item-price">7,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Sladoled (3 kugle)</div>
+                        <div class="item-description">Vanila, čokolada, jagoda</div>
+                    </div>
+                    <div class="item-price">6,00 KM</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Palačinke</div>
+                        <div class="item-description">Sa nutellom ili džemom</div>
+                    </div>
+                    <div class="item-price">8,00 KM</div>
+                </div>
+            </div>
         </div>
-        <div class="history">
-            <h2>History</h2>
-            <table id="historyTable">
-                <thead><tr><th>Date</th><th>Pomodoros</th></tr></thead>
-                <tbody></tbody>
-            </table>
+
+        <div class="contact-info">
+            <h3>📍 Kontakt</h3>
+            <p>📞 Telefon: 037/123-456</p>
+            <p>📍 Adresa: Bosanska 12, 77000 Bihać</p>
+            <p>⏰ Radno vrijeme: 10:00 - 23:00</p>
+            <p>🚚 Dostava: Besplatna za narudžbe preko 25 KM</p>
         </div>
     </div>
-    <script>
-        // Pomodoro durations in seconds
-        const WORK_DURATION = 25 * 60;
-        const BREAK_DURATION = 5 * 60;
-
-        // State variables
-        let currentMode = 'work';  // 'work' or 'break'
-        let timeLeft = WORK_DURATION;
-        let timerInterval = null;
-        let timerRunning = false;
-        let showTime = true;
-
-        // DOM elements
-        const sessionTypeEl = document.getElementById('sessionType');
-        const timerEl = document.getElementById('timer');
-        const startBtn = document.getElementById('startBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const toggleBtn = document.getElementById('toggleBtn');
-        const todayCountEl = document.getElementById('todayCount');
-        const streakCountEl = document.getElementById('streakCount');
-        const historyTableBody = document.querySelector('#historyTable tbody');
-
-        // Load or initialize data from localStorage
-        let data = JSON.parse(localStorage.getItem('pomodoroData')) || { history: {}, streak: 0, lastDate: '' };
-
-        // Helper to get today's date string (YYYY-MM-DD)
-        function getDateString(date = new Date()) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        const today = getDateString();
-        // Ensure today's entry exists
-        if (!data.history[today]) {
-            data.history[today] = 0;
-        }
-
-        // Update displayed stats (today's count, streak, history)
-        function updateStatsUI() {
-            todayCountEl.textContent = data.history[today];
-            streakCountEl.textContent = data.streak;
-            historyTableBody.innerHTML = '';
-            // Show history for days except today
-            const dates = Object.keys(data.history).filter(date => date !== today)
-                                .sort((a, b) => b.localeCompare(a));
-            dates.forEach(date => {
-                const row = document.createElement('tr');
-                const dateCell = document.createElement('td');
-                const countCell = document.createElement('td');
-                dateCell.textContent = date;
-                countCell.textContent = data.history[date];
-                row.appendChild(dateCell);
-                row.appendChild(countCell);
-                historyTableBody.appendChild(row);
-            });
-        }
-
-        // Save data to localStorage
-        function saveData() {
-            localStorage.setItem('pomodoroData', JSON.stringify(data));
-        }
-
-        // Format time as MM:SS
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = seconds % 60;
-            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
-
-        // Switch to the next session (work <-> break)
-        function switchSession() {
-            if (currentMode === 'work') {
-                // Work session finished
-                // Increment today's count
-                data.history[today]++;
-                // Update streak
-                const lastDate = data.lastDate;
-                if (lastDate === today) {
-                    // Already did a Pomodoro today, no change
-                } else {
-                    const yesterday = getDateString(new Date(Date.now() - 864e5));
-                    if (lastDate === yesterday) {
-                        // Continue streak
-                        data.streak++;
-                    } else {
-                        // Reset streak
-                        data.streak = 1;
-                    }
-                    data.lastDate = today;
-                }
-                // Update UI stats and storage
-                updateStatsUI();
-                saveData();
-                // Switch to break session
-                currentMode = 'break';
-                timeLeft = BREAK_DURATION;
-                sessionTypeEl.textContent = 'Break Session';
-                document.body.classList.remove('work');
-                document.body.classList.add('break');
-            } else {
-                // Break session finished, switch to work
-                currentMode = 'work';
-                timeLeft = WORK_DURATION;
-                sessionTypeEl.textContent = 'Work Session';
-                document.body.classList.remove('break');
-                document.body.classList.add('work');
-            }
-        }
-
-        // Timer tick function (called every second)
-        function tick() {
-            if (timeLeft > 0) {
-                timeLeft--;
-                if (showTime) {
-                    timerEl.textContent = formatTime(timeLeft);
-                }
-            } else {
-                // Time is up, switch session automatically
-                clearInterval(timerInterval);
-                switchSession();
-                // Start next session automatically
-                timerInterval = setInterval(tick, 1000);
-            }
-        }
-
-        // Start/Pause button functionality
-        startBtn.addEventListener('click', function() {
-            if (!timerRunning) {
-                // Start or resume the timer
-                timerInterval = setInterval(tick, 1000);
-                timerRunning = true;
-                startBtn.textContent = 'Pause';
-            } else {
-                // Pause the timer
-                clearInterval(timerInterval);
-                timerRunning = false;
-                startBtn.textContent = 'Start';
-            }
-        });
-
-        // Reset button functionality (stop and reset timer)
-        resetBtn.addEventListener('click', function() {
-            clearInterval(timerInterval);
-            timerRunning = false;
-            // Reset to initial work session
-            currentMode = 'work';
-            timeLeft = WORK_DURATION;
-            sessionTypeEl.textContent = 'Work Session';
-            document.body.classList.remove('break');
-            document.body.classList.add('work');
-            timerEl.textContent = formatTime(timeLeft);
-            startBtn.textContent = 'Start';
-        });
-
-        // Toggle show/hide timer display
-        toggleBtn.addEventListener('click', function() {
-            showTime = !showTime;
-            if (showTime) {
-                timerEl.textContent = formatTime(timeLeft);
-                toggleBtn.textContent = 'Hide Timer';
-            } else {
-                timerEl.textContent = '';
-                toggleBtn.textContent = 'Show Timer';
-            }
-        });
-
-        // Initialize UI on load
-        timerEl.textContent = formatTime(timeLeft);
-        updateStatsUI();
-        saveData();
-    </script>
 </body>
 </html>
